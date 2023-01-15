@@ -1,23 +1,33 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
 
+
 function App() {
+
+  const [info, setInfo] = useState("");
+  
+
+   async function readInfo(){
+    const fileName = 'file.txt'
+    try{
+      const res = await fetch(`http://localhost:8000/drive/${fileName}`)
+      const data = await res.json();
+      setInfo(data)
+    }
+    catch (error){
+      console.log(error);
+    }
+  }
+  
+
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+     <h1>welcome to google drive</h1> 
+     <div>file 1.txt<br/>
+     <h1 style={{backgroundColor: `salmon`}}>{info}</h1>
+     <button onClick={readInfo}>info</button></div>
     </div>
   );
 }
