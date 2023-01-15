@@ -4,34 +4,31 @@ const app = express();
 const port = 8000;
 // var cors = require('cors');
 const fs = require('fs');
+const { dirname } = require('path');
+const path = require('path');
 const { log } = require('console');
 const { json } = require('express');
 // app.use(cors())
 
-// let fakeDB = {
-// 	flavors: [
-// 		{ name: "vanilla", amount: 2 },
-// 		{ name: "chocolate", amount: 5 },
-// 		{ name: "strawberry", amount: 1 },
-// 		{ name: "mint", amount: 8 },
-// 	],
-// 	customers: [{
-// 		id: 1,
-// 		name: 'John',
-// 		favoriteFlavor: 'vanilla'
-// 	}, {
-// 		id: 2,
-// 		name: 'Jane',
-// 		favoriteFlavor: 'chocolate'
-// 	}, {
-// 		id: 3,
-// 		name: 'Bob',
-// 		favoriteFlavor: 'strawberry'
-// 	}]
-// }
+let fakeDB = {
+	users: [{
+		id: 1,
+		name: 'John',
+		password: '12345678'
+	}, {
+		id: 2,
+		name: 'Jane',
+		password: '87654321'
+	}, {
+		id: 3,
+		name: 'Bob',
+		password: '13572468'
+	}]
+}
 
 app.use(function (req, res, next) {
 	res.header("Access-Control-Allow-Origin", "*");
+	res.header(`Access-Control-Allow-Methods`, `*`);
 	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 	next()
 });
@@ -41,13 +38,11 @@ app.get('/', (req, res) => {
 	res.send({ data: 'your server is working (;' })
 });
 
-
-// get all flavors from the fakeDB
 app.get('/drive/:fileName', (req, res) => {
 	const {params} = req;
 
 	console.log(params);
-	fs.readFile(`../../fakeDB/${params.fileName}`, 'utf8', (error, data) => {
+	fs.readFile(`../server/fakeDB/${params.fileName}`, 'utf8', (error, data) => {
 		if(error){
 			console.log('serverError:', error);
 		}
@@ -60,8 +55,52 @@ app.get('/drive/:fileName', (req, res) => {
 			console.log(error);
 		}
 	})
-	// res.json(toGive) //use res.json to return res as json
 });
+
+app.get(`/users/:username/:password`, (req, res) => {
+	const {params, body} = req;
+	console.log(params);
+	const user = fakeDB.users.find
+	(user => user.name === params.username && user.password === params.password);
+	if(user){
+		console.log('yayyyy')
+		res.json(user)
+	}
+	else{
+		res.json('what')
+	}
+})
+
+
+
+// app.delete(`/drive/:deleteFile`, (req, res) => {
+// 		const {params} = req;
+// 		console.log(params.deleteFile)
+// 		const deleteFile = params.deleteFile;
+// 		fs.rm(`./fakeDB/${params.deleteFile}`, (err) => {
+// 			if (err) {
+// 				console.log(err);
+// 			}
+			
+// 			console.log("Delete File successfully.");
+// 			res.json(body);
+// 		});
+
+// 	console.log('LOOOOOOK', params.newFile)
+// })
+app.put('/drive/:deleteFile', (req, res, next) => {
+	const {params} = req;
+	const deleteFile = params.deleteFile;
+	console.log(deleteFile)
+		fs.rm(`./fakeDB/${deleteFile}`, (err) => {
+			if (err) {
+				console.log(err);
+			}
+			console.log("Delete File successfully.");
+			res.json('success to delete')
+		});
+
+})
 
 // //customers API
 // app.get('/api/customers/:id', (req, res) => {

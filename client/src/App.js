@@ -1,34 +1,23 @@
 import React, { useState } from 'react';
-import './App.css';
+import { Route, Routes } from "react-router-dom";
+import Login from "./components/LogIn";
+import NavBar from "./components/NavBar";
+import '../src/signIn.css';
+import Home from './components/Home';
+import Drive from './components/Drive';
 
 
 function App() {
 
-  const [info, setInfo] = useState("");
-  
-
-   async function readInfo(){
-    const fileName = 'file.txt'
-    try{
-      const res = await fetch(`http://localhost:8000/drive/${fileName}`)
-      const data = await res.json();
-      setInfo(data)
-    }
-    catch (error){
-      console.log(error);
-    }
-  }
-  
-
-
-
   return (
-    <div className="App">
-     <h1>welcome to google drive</h1> 
-     <div>file 1.txt<br/>
-     <h1 style={{backgroundColor: `salmon`}}>{info}</h1>
-     <button onClick={readInfo}>info</button></div>
-    </div>
+    <>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/Drive" element={<Drive />} />
+        <Route path="/LogIn" element={<Login />} />
+      </Routes>
+    </>
   );
 }
 
