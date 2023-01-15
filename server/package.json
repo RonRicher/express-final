@@ -4,9 +4,10 @@
   },
   "name": "final-express-project",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
   "devDependencies": {},
   "scripts": {
+    "start": "nodemon ./bin/www",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
