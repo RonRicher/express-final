@@ -8,7 +8,12 @@ const { dirname } = require('path');
 const path = require('path');
 const { log } = require('console');
 const { json } = require('express');
-// app.use(cors())
+
+// app.options('*', (req, res) => {
+// 	res.status(200).send('fddfdf');
+// });
+
+// app.use(cors({origin: "*"}))
 
 let fakeDB = {
 	users: [{
@@ -27,6 +32,7 @@ let fakeDB = {
 }
 
 app.use(function (req, res, next) {
+	console.log('!!!!!!!!!!!')
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header(`Access-Control-Allow-Methods`, `*`);
 	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -46,16 +52,30 @@ app.get('/drive/:fileName', (req, res) => {
 		if(error){
 			console.log('serverError:', error);
 		}
-		try{
-			console.log(data.toString())
+		try {
 			res.json(data)
-		
 		}
-		catch(error){
+		catch (error) {
 			console.log(error);
 		}
 	})
 });
+
+app.post('/drive', (req, res) => {
+	console.log(req.query.param1)
+	console.log(req.query.param2)
+	fs.rename(`../server/fakeDB/${req.query.param2}`,`../server/fakeDB/${req.query.param1}`,  (error, data) => {
+		if (error) {
+			console.log('serverError:', error);
+		}
+		
+		console.log('file renamed')
+	})
+	
+
+});
+
+
 
 app.get(`/users/:username/:password`, (req, res) => {
 	const {params, body} = req;
@@ -121,7 +141,7 @@ app.put('/drive/:deleteFile', (req, res, next) => {
 // 	const amountCheck = flavor.amount - body.amount;
 // 	amountCheck >= 0? flavor.amount = amountCheck : 
 // 	res.json(fakeDB.flavors)
-	
+
 // //! Second Mission - (PUT) create a route that handles buying ice cream flavor by name from req.params, 
 // //!recive flavor from params and amount from body
 
