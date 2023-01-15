@@ -1,24 +1,26 @@
 import logo from './logo.svg';
 import './App.css';
+import { useState } from 'react';
 
 function App() {
+
+  const [info , setInfo] = useState('')
+
+  async function readInfo(){
+    let fileName  = 'names.txt'
+    const res = await fetch(`http://localhost:8000/drive/${fileName}`)
+    const data = await res.json()
+    setInfo(data)
+    console.log(data) 
+  }
+
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <button onClick={readInfo}>readfile</button>
+      <h1>{info}</h1>
+    </>
   );
 }
 
