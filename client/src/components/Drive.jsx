@@ -1,126 +1,57 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
+import File from '../components/file';
+import Folder from '../components/folder';
+import NavBar from './NavBar';
+
 
 
 
 function Drive() {
+  const navigate = useNavigate();
+  
+  const [driveFiles, setDriveFiles] = useState([]);
+  console.log(driveFiles);
 
-  const [info, setInfo] = useState("");
-  const [data, setData] = useState("");
+  useEffect(() => {
+    getfiles();
 
+  }, []);
 
-
-  async function readInfo() {
-    const fileName = 'ggg.txt';
+  async function getfiles() {
+    const userName = localStorage.getItem('userName');
+    console.log(userName);
     try {
-      const res = await fetch(`http://localhost:8000/drive/info/${fileName}`);
+      console.log('client');
+      const res = await fetch(`http://localhost:8000/drive/getFiles/${userName}`);
       const data = await res.json();
-      console.log(data)
-      const object = {
-        'blocks: ': data.blocks,
-        'Created: ': data.birthtime,
-        'Size: ': data.size
-      }
-      
-      setInfo(JSON.stringify(object));
-      // setInfo(data);
+      setDriveFiles(data);
+      console.log(driveFiles);
     }
-    catch (error) {
-      console.log(error);
+    catch (err) {
+      console.log(err);
     }
   }
 
-
-
-  async function showData() {
-    const fileName = 'ggg.txt';
-    try {
-      const res = await fetch(`http://localhost:8000/drive/show/${fileName}`);
-      const data = await res.json();
-      setData(data);
-    }
-    catch (error) {
-      console.log(error);
-    }
-  }
-
-
-  async function moveFile() {
-    const fileName = 'file.txt';
-    const destination = `hello`;
-    try {
-      const res = await fetch(`http://localhost:8000/drive/moveFile/?param1=${fileName}&param2=${destination}`,
-      {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-      });
-    }
-    catch (error) {
-      console.log('clientError: ', error);
-    }
-  }
-
-  async function deleteFile() {
-    const deleteFile = 'ggg.txt';
-    try {
-      const res = await fetch(`http://localhost:8000/drive/${deleteFile}`,
-      {
-        method: 'DELETE',
-        headers: {'Content-Type': 'application/json'},
-      });
-    }
-    catch (error) {
-      console.log(error);
-    }
-  }
-
-
-  async function rename(){
-    const name = 'ggg.txt';
-    const newName = prompt('please enter the new name');
-    try {
-      const res = fetch(`http://localhost:8000/drive/rename/?name=${name}&newName=${newName}`,
-      {
-        method: 'PUT',
-        headers: {'Content-Type': 'application/json'}
-      })
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  async function copyFile(){
-    const name = 'file.txt';
-    const folder = prompt('choose folder in directory')
-    try {
-      const res = fetch(`http://localhost:8000/drive/copyFile/?name=${name}&newName=${folder}`,
-      {
-        method: 'PUT',
-        headers: {'Content-Type': 'application/json'}
-      })
-    } catch (error) {
-      console.log(error);
-    }
+  function enterFolder(folderName) {
+    navigate(`/drive/${folderName}`);
   }
 
 
   return (
-    <div className="App">
-      <h1>welcome to google drive</h1>
-      <div className='fileContainer'>file 1.txt<br />
-      <h6 style={{ backgroundColor: `salmon` }}>{info}</h6>
+    <>
+      <NavBar />
+    
+      <div className="App">
+        <h1>welcome to google drive</h1>
+        <h1>{window.location.pathname}</h1>
+        {<div className='allFiles'>{driveFiles?.map((file) => typeof file !== 'object' ?
+          <File key={Math.random() * 0.5} name={file} /> :
+          <button key={Math.random() * 0.5} className='folderBtn' onClick={() =>
+           enterFolder(file.folderName)}>
+            <Folder key={Math.random() * 0.5} name={file.folderName} /></button>)}</div>}
       </div>
-      <div>
-        <br />
-
-        <h2 style={{ backgroundColor: `green` }}>{data}</h2>
-        <button onClick={readInfo}>info</button>
-        <button onClick={showData}>show data</button>
-        <button onClick={deleteFile}>delete file</button>
-        <button onClick={moveFile}>move file</button>
-        <button onClick={rename}>rename file</button>
-        <button onClick={copyFile}>copy file</button>
-      </div>
-    </div>
+    </>
   );
 }
 

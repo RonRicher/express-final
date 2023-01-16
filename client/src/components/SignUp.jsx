@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-
-
-
+import NavBar from './NavBar';
 
 
 function SignUp() {
@@ -16,7 +13,7 @@ function SignUp() {
     });
     const [errorMessage, setErrorMessage] = useState(null);
 
-    const handleSubmit = async(e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (loading) {
             return;
@@ -58,7 +55,7 @@ function SignUp() {
             }
             return data;
         } catch (e) {
-            console.log('oh no!!!!')
+            console.log('oh no!!!!');
             console.log(e);
             setTimeout(3000, alert("Please Check Your Internet Connection"));
             setTimeout(3000, window.location.reload());
@@ -73,7 +70,6 @@ function SignUp() {
         }
 
         localStorage.setItem("userId", user.id);
-        // setUserNum(user.id);
         window.history.pushState(null, null, window.location.href);
         window.onpopstate = window.history.go(1);
         navigate(`/LogIn`);
@@ -81,6 +77,7 @@ function SignUp() {
 
     return (
         <div>
+            <NavBar />
             <div className="login-wrapper">
                 <div className="container main">
                     <div className="row">

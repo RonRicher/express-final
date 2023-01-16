@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+
 import { useNavigate } from "react-router-dom";
+import NavBar from './NavBar';
 
 
 
@@ -13,7 +15,7 @@ function LogIn() {
         password: "",
     });
     const [errorMessage, setErrorMessage] = useState("");
-
+    
 
     const handleChange = ({ target }) => {
         const { name, value } = target;
@@ -58,8 +60,10 @@ function LogIn() {
             setErrorMessage("Please Check UserName or Password");
             return;
         }
-
-        localStorage.setItem("userId", 1);
+        if(typeof window !== 'undefined'){
+            localStorage.setItem('userName', userInput.username);
+        }
+        
         // setUserNum(user.id);
         window.history.pushState(null, null, window.location.href);
         window.onpopstate = window.history.go(1);
@@ -68,6 +72,7 @@ function LogIn() {
 
     return (
         <div>
+            <NavBar />
             <div className="login-wrapper">
                 <div className="container main">
                     <div className="row">

@@ -15,7 +15,7 @@ const { json, query } = require('express');
 
 // app.use(cors({origin: "*"}))
 
-let fakeDB = {
+let usersDB = {
 	users: [{
 		id: 1,
 		name: 'John',
@@ -31,6 +31,43 @@ let fakeDB = {
 	}]
 };
 
+const files = [
+	{
+		name: 'ggg.txt',
+		isFolder: false,
+		path: '/'
+	},
+	{
+		name: 'hello',
+		isFolder: true,
+		path: '/'
+	},
+	{
+		name: 'iii.txt',
+		isFolder: false,
+		path: '/hello/'
+	}
+];
+
+let fakeDB = [{
+	id: 1,
+	name: 'John',
+	files: ['ggg.txt', 'dfsf.txt',
+		{
+			folderName: 'hello', files: ['iii.txt', 'bbb.txt', 'ccc.txt',
+				{
+					folderName: 'Joalin', files: ['bbb.txt', 'ccc.txt',
+						{ folderName: 'amit', files: ['bbb.txt', 'asdd.txt'] }],
+				}]
+		}]
+},
+{
+	id: 2,
+	name: 'Bret',
+	files: ['ggg.txt', 'dfsf.txt', { folderName: 'hello', files: ['iii.txt', 'bbb.txt', 'ccc.txt', 'folder'] }]
+}
+];
+
 app.use(function (req, res, next) {
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header(`Access-Control-Allow-Methods`, `*`);
@@ -41,6 +78,58 @@ app.use(function (req, res, next) {
 app.use(bodyParser.json());
 app.get('/', (req, res) => {
 	res.send({ data: 'your server is working (;' });
+});
+
+
+app.get('/drive/getFiles/:userName', (req, res) => {
+	const currentUserName = req.params.userName;
+	console.log('server:', currentUserName);
+
+
+	try {
+		for (user of fakeDB) {
+			console.log('for', user);
+			if (user.name === currentUserName) {
+				res.json(user.files);
+			}
+		}
+	}
+	catch (error) {
+		console.log(error);
+	}
+});
+
+
+app.get('/drive/getFiles/:userName/*', (req, res) => {
+	const currentUserName = req.params.userName;
+	let currentFolderName = req.url.split('/');
+	currentFolderName = currentFolderName.splice(4);
+	console.log('current: ', currentFolderName);
+
+
+
+	try {
+		for (user of fakeDB) {
+			if (user.name === currentUserName) {
+				let a = user.files;
+				for (index in currentFolderName) {
+
+					for (i in a) {
+						if (typeof a[i] === 'object') {
+							if (a[i].folderName === currentFolderName[index]) {
+								a = a[i].files;
+							}
+						}
+					}
+				}
+				res.send(a || []);
+			}
+
+		}
+	}
+	catch (error) {
+		console.log(error);
+	}
 });
 
 
@@ -80,7 +169,6 @@ app.get('/drive/show/:fileName', (req, res) => {
 });
 
 app.put('/drive/rename', (req, res) => {
-
 	fs.rename(`../server/fakeDB/${req.query.name}`, `../server/fakeDB/${req.query.newName}`, (error, data) => {
 		if (error) {
 			console.log('serverError:', error);
@@ -93,7 +181,7 @@ app.put('/drive/rename', (req, res) => {
 app.put('/drive/copyFile', (req, res) => {
 	console.log(req.query.name);
 	console.log(req.query.newName);
-	fs.copy(`../server/fakeDB/${req.query.name}`, `../server/fakeDB/${req.query.newName}`, (error, data) => {
+	fs.copyFile(`../server/fakeDB/${req.query.name}`, `../server/fakeDB/${req.query.newName}/${req.query.name}`, (error, data) => {
 		if (error) {
 			console.log('serverError:', error);
 		}
@@ -105,7 +193,7 @@ app.put('/drive/copyFile', (req, res) => {
 app.get(`/users/:username/:password`, (req, res) => {
 	const { params, body } = req;
 	console.log(params);
-	const user = fakeDB.users.find
+	const user = usersDB.users.find
 		(user => user.name === params.username && user.password === params.password);
 	if (user) {
 		console.log('yayyyy');
@@ -120,28 +208,32 @@ app.get(`/users/:username/:password`, (req, res) => {
 app.post(`/users/signup/:username/:password`, (req, res) => {
 	const { params } = req;
 	console.log(params);
-	const user = fakeDB.users.find
-		(user => user.name === params.username);
-	if (!user) {
-		console.log('yayyyy');
-		fakeDB.users.push({
-			id: fakeDB.users.length,
+	const user = usersDB.users.find;
+	(user => user.name === params.username);
+	if (user) {
+		usersDB.users.push({
+			id: usersDB.users.length,
 			name: params.username,
 			password: params.password
 		});
-		res.json([]);
-		console.log('server empty');
+		fs.mkdir(`./fakeDB/allUserFiles/${params.username}`, (error) => {
+			if (error) {
+				console.log(error);
+			}
+		});
+		res.send([]);
+		console.log('empty');
 	}
 	else {
 		res.json('what');
-		console.log('server not empty');
+		console.log('not empty');
 	}
 });
 
 
 app.post('/drive/moveFile', (req, res, next) => {
-	fs.rename(`../server/fakeDB/${req.query.param1}`,
-		`../server/fakeDB/${req.query.param2}/${req.query.param1}`,
+	fs.rename(`../server/fakeDB/${req.query.source}`,
+		`../server/fakeDB/${req.query.destination}/${req.query.source}`,
 		(err) => {
 			if (err) {
 				console.log(`err: `, err);
@@ -165,61 +257,6 @@ app.delete('/drive/:deleteFile', (req, res, next) => {
 	});
 
 });
-
-// //customers API
-// app.get('/api/customers/:id', (req, res) => {
-// 	const customer = fakeDB.customers.find(
-// 		customer => customer.id === Number(req.params.id) 
-// 	)
-// 	res.json(customer)
-// 	//First Mission: return to client customer from FakeDB - specified by param
-
-// })
-
-// app.put('/api/flavors/:name', (req, res, next) => {
-// 	const {body, params} = req
-// 	const flavor = fakeDB.flavors.find(
-// 		flavor => flavor.name === params.name 
-// 	)
-// 	console.log(flavor);
-// 	const amountCheck = flavor.amount - body.amount;
-// 	amountCheck >= 0? flavor.amount = amountCheck : 
-// 	res.json(fakeDB.flavors)
-
-// //! Second Mission - (PUT) create a route that handles buying ice cream flavor by name from req.params, 
-// //!recive flavor from params and amount from body
-
-// })
-
-// app.post('/api/flavors/:name', (req, res, next) => {
-// 	const {body, params} = req
-// 	console.log("req", body, params);
-// 	fakeDB.flavors= [...fakeDB.flavors, body]
-// 	res.json(fakeDB.flavors)
-
-// })
-
-// app.get(`/api/flavors`, (req, res, next) => {
-// 	const {query} = req.query;
-// 	const Filteredflavors = fakeDB.flavors.filter(flavor => req.query.amount <= flavor.amount);
-// 	res.json(Filteredflavors)
-// } )
-
-// //!Fourth Mission (Get) in the existing route "/api/flavor" add a query of amount. 
-// //!If amount is given, return only the flavors that has at least that amount
-
-// //! Extra Mission - (Delete) create a route that handle deleting flavor from the fakeDB.flavors through req.params
-
-// app.delete('/api/flavors/:name', (req, res, next) => {
-// 	const {params} = req
-// 	console.log("req", params);
-// 	const remainFlavors = fakeDB.flavors.filter(
-// 		flavor => flavor.name !== params.name 
-// 	)
-// 	fakeDB.flavors = remainFlavors;
-// 	res.json(fakeDB.flavors)
-
-// })
 
 
 app.listen(port, () => {
