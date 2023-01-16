@@ -43,7 +43,26 @@ app.get('/', (req, res) => {
 	res.send({ data: 'your server is working (;' })
 });
 
+
+
 app.get('/drive/info/:fileName', (req, res) => {
+	const {params} = req;
+
+	console.log(params);
+	fs.stat(`../server/fakeDB/${params.fileName}`, 'utf8', (error, data) => {
+		if(error){
+			console.log('serverError:', error);
+		}
+		try {
+			res.json(data)
+		}
+		catch (error) {
+			console.log(error);
+		}
+	})
+});
+
+app.get('/drive/show/:fileName', (req, res) => {
 	const {params} = req;
 
 	console.log(params);
@@ -82,6 +101,21 @@ app.put('/drive/copyFile', (req, res) => {
 		
 		console.log('file renamed')
 	})
+});
+
+app.post('/drive/copyFile', (req, res) => {
+	// console.log(req.query.param1)
+	// console.log(req.query.param2)
+	fs.copyFile(`../server/fakeDB/${req.query.param1}`,
+	`../server/fakeDB/${req.query.param2}/${req.query.param1}`,  (error, data) => {
+		if (error) {
+			console.log('serverError:', error);
+		}
+		
+		console.log('file renamed')
+	})
+	
+
 });
 
 
