@@ -7,7 +7,7 @@ const fs = require('fs');
 const { dirname } = require('path');
 const path = require('path');
 const { log } = require('console');
-const { json } = require('express');
+const { json, query } = require('express');
 
 // app.options('*', (req, res) => {
 // 	res.status(200).send('fddfdf');
@@ -32,7 +32,6 @@ let fakeDB = {
 }
 
 app.use(function (req, res, next) {
-	console.log('!!!!!!!!!!!')
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header(`Access-Control-Allow-Methods`, `*`);
 	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -44,7 +43,7 @@ app.get('/', (req, res) => {
 	res.send({ data: 'your server is working (;' })
 });
 
-app.get('/drive/:fileName', (req, res) => {
+app.get('/drive/info/:fileName', (req, res) => {
 	const {params} = req;
 
 	console.log(params);
@@ -61,18 +60,28 @@ app.get('/drive/:fileName', (req, res) => {
 	})
 });
 
-app.post('/drive', (req, res) => {
-	console.log(req.query.param1)
-	console.log(req.query.param2)
-	fs.rename(`../server/fakeDB/${req.query.param2}`,`../server/fakeDB/${req.query.param1}`,  (error, data) => {
+app.put('/drive/rename', (req, res) => {
+	console.log(req.query.name)
+	console.log(req.query.newName)
+	fs.rename(`../server/fakeDB/${req.query.name}`,`../server/fakeDB/${req.query.newName}`,  (error, data) => {
 		if (error) {
 			console.log('serverError:', error);
 		}
 		
 		console.log('file renamed')
 	})
-	
+});
 
+app.put('/drive/copyFile', (req, res) => {
+	console.log(req.query.name)
+	console.log(req.query.newName)
+	fs.copy(`../server/fakeDB/${req.query.name}`,`../server/fakeDB/${req.query.newName}`,  (error, data) => {
+		if (error) {
+			console.log('serverError:', error);
+		}
+		
+		console.log('file renamed')
+	})
 });
 
 
@@ -92,23 +101,24 @@ app.get(`/users/:username/:password`, (req, res) => {
 })
 
 
+app.post('/drive/moveFile', (req, res, next) => {
+	console.log('query:', req.query)
+	console.log("lllllllllll")
+	// console.log(req.query.param1)
+	console.log(req.query.param2)
+		fs.rename(`../server/fakeDB/${req.query.param1}`,
+		 `../server/fakeDB/${req.query.param2}/${req.query.param1}`,
+		 (err) => {
+			if (err) {
+				console.log(`err: `,err);
+			}
+		}
+		);
+		console.log("moved File successfully.");
+		res.json('success to move')
+})
 
-// app.delete(`/drive/:deleteFile`, (req, res) => {
-// 		const {params} = req;
-// 		console.log(params.deleteFile)
-// 		const deleteFile = params.deleteFile;
-// 		fs.rm(`./fakeDB/${params.deleteFile}`, (err) => {
-// 			if (err) {
-// 				console.log(err);
-// 			}
-			
-// 			console.log("Delete File successfully.");
-// 			res.json(body);
-// 		});
-
-// 	console.log('LOOOOOOK', params.newFile)
-// })
-app.put('/drive/:deleteFile', (req, res, next) => {
+app.delete('/drive/:deleteFile', (req, res, next) => {
 	const {params} = req;
 	const deleteFile = params.deleteFile;
 	console.log(deleteFile)
