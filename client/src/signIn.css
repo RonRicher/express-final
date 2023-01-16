@@ -23,12 +23,18 @@
   }
   
   .login-wrapper .signin-image {
-    background-image: url("../img/bg1.jpg");
+
+
+    height: 200px;
+    width: 900px;
+    background-image: url("../public/bg1.jpg");
     background-position: center;
     background-size: cover;
+    margin-bottom: 50px;
   }
   
   .login-wrapper .side-image-signin {
+
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;

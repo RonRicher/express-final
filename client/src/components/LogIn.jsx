@@ -9,8 +9,8 @@ function LogIn() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [userInput, setUserInput] = useState({
-        username: "Bret",
-        password: "-37.3159",
+        username: "",
+        password: "",
     });
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -42,8 +42,8 @@ function LogIn() {
             const data = await res.json();
             setLoading(false);
             console.log(data);
-            if(typeof data === 'string'){
-                setErrorMessage('Please Check UserName or Password')
+            if (typeof data === 'string') {
+                setErrorMessage('Please Check UserName or Password');
             }
             return data;
         } catch (e) {
@@ -116,6 +116,7 @@ function LogIn() {
                                 </div>
                                 <p id="response-text">{errorMessage}</p>
                             </div>
+                            <a href='/SignUp'>Dont have an account yet?</a>
                         </form>
                     </div>
                 </div>

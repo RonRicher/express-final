@@ -5,6 +5,8 @@ import '../src/signIn.css';
 import Home from './components/Home';
 import Drive from './components/Drive';
 import { Route, Routes } from 'react-router-dom';
+import './App.css'
+import SignUp from './components/SignUp';
 
 
 function App() {
@@ -16,6 +18,7 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/Drive" element={<Drive />} />
         <Route path="/LogIn" element={<Login />} />
+        <Route path="/SignUp" element={<SignUp />} />
       </Routes>
     </>
   );

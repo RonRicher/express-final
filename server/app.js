@@ -116,8 +116,6 @@ app.put('/drive/copyFile', (req, res) => {
 });
 
 app.post('/drive/copyFile', (req, res) => {
-	// console.log(req.query.param1)
-	// console.log(req.query.param2)
 	fs.copyFile(`../server/fakeDB/${req.query.param1}`,
 		`../server/fakeDB/${req.query.param2}/${req.query.param1}`, (error, data) => {
 			if (error) {
@@ -130,8 +128,6 @@ app.post('/drive/copyFile', (req, res) => {
 
 });
 
-
-
 app.get(`/users/:username/:password`, (req, res) => {
 	const { params, body } = req;
 	console.log(params);
@@ -143,6 +139,28 @@ app.get(`/users/:username/:password`, (req, res) => {
 	}
 	else {
 		res.json('what')
+	}
+})
+
+
+app.post(`/users/signup/:username/:password`, (req, res) => {
+	const {params} = req;
+	console.log(params);
+	const user = fakeDB.users.find
+	(user => user.name === params.username);
+	if(!user){
+		console.log('yayyyy')
+		fakeDB.users.push({
+			id: fakeDB.users.length,
+			name: params.username,
+			password: params.password
+		})
+		res.json([])
+		console.log('server empty')
+	}
+	else{
+		res.json('what')
+		console.log('server not empty')
 	}
 })
 
