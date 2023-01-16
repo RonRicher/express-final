@@ -44,7 +44,7 @@ app.get('/', (req, res) => {
 	res.send({ data: 'your server is working (;' })
 });
 
-app.get('/drive/:fileName', (req, res) => {
+app.get('/drive/info/:fileName', (req, res) => {
 	const {params} = req;
 
 	console.log(params);
@@ -61,10 +61,25 @@ app.get('/drive/:fileName', (req, res) => {
 	})
 });
 
-app.post('/drive', (req, res) => {
+app.post('/drive/rename', (req, res) => {
 	console.log(req.query.param1)
 	console.log(req.query.param2)
 	fs.rename(`../server/fakeDB/${req.query.param2}`,`../server/fakeDB/${req.query.param1}`,  (error, data) => {
+		if (error) {
+			console.log('serverError:', error);
+		}
+		
+		console.log('file renamed')
+	})
+	
+
+});
+
+app.post('/drive/copyFile', (req, res) => {
+	// console.log(req.query.param1)
+	// console.log(req.query.param2)
+	fs.copyFile(`../server/fakeDB/${req.query.param1}`,
+	`../server/fakeDB/${req.query.param2}/${req.query.param1}`,  (error, data) => {
 		if (error) {
 			console.log('serverError:', error);
 		}
@@ -108,7 +123,7 @@ app.get(`/users/:username/:password`, (req, res) => {
 
 // 	console.log('LOOOOOOK', params.newFile)
 // })
-app.put('/drive/:deleteFile', (req, res, next) => {
+app.put('/drive/delete/:deleteFile', (req, res, next) => {
 	const {params} = req;
 	const deleteFile = params.deleteFile;
 	console.log(deleteFile)
