@@ -31,6 +31,8 @@ let fakeDB = {
 	}]
 }
 
+let files = ['ggg.txt', 'dfsf.txt', 'hello']
+
 app.use(function (req, res, next) {
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header(`Access-Control-Allow-Methods`, `*`);
@@ -44,13 +46,23 @@ app.get('/', (req, res) => {
 });
 
 
+app.get('/drive/getFiles', (req, res) => {
+	try {
+		res.json(files)
+	}
+	catch (error) {
+		console.log(error);
+	}
+})
+
+
 
 app.get('/drive/info/:fileName', (req, res) => {
-	const {params} = req;
+	const { params } = req;
 
 	console.log(params);
 	fs.stat(`../server/fakeDB/${params.fileName}`, 'utf8', (error, data) => {
-		if(error){
+		if (error) {
 			console.log('serverError:', error);
 		}
 		try {
@@ -63,11 +75,11 @@ app.get('/drive/info/:fileName', (req, res) => {
 });
 
 app.get('/drive/show/:fileName', (req, res) => {
-	const {params} = req;
+	const { params } = req;
 
 	console.log(params);
 	fs.readFile(`../server/fakeDB/${params.fileName}`, 'utf8', (error, data) => {
-		if(error){
+		if (error) {
 			console.log('serverError:', error);
 		}
 		try {
@@ -80,13 +92,13 @@ app.get('/drive/show/:fileName', (req, res) => {
 });
 
 app.put('/drive/rename', (req, res) => {
-	console.log(req.query.name)
-	console.log(req.query.newName)
-	fs.rename(`../server/fakeDB/${req.query.name}`,`../server/fakeDB/${req.query.newName}`,  (error, data) => {
+	// console.log(req.query.name)
+	// console.log(req.query.newName)
+	fs.rename(`../server/fakeDB/${req.query.name}`, `../server/fakeDB/${req.query.newName}`, (error, data) => {
 		if (error) {
 			console.log('serverError:', error);
 		}
-		
+
 		console.log('file renamed')
 	})
 });
@@ -94,11 +106,11 @@ app.put('/drive/rename', (req, res) => {
 app.put('/drive/copyFile', (req, res) => {
 	console.log(req.query.name)
 	console.log(req.query.newName)
-	fs.copy(`../server/fakeDB/${req.query.name}`,`../server/fakeDB/${req.query.newName}`,  (error, data) => {
+	fs.copy(`../server/fakeDB/${req.query.name}`, `../server/fakeDB/${req.query.newName}`, (error, data) => {
 		if (error) {
 			console.log('serverError:', error);
 		}
-		
+
 		console.log('file renamed')
 	})
 });
@@ -107,29 +119,29 @@ app.post('/drive/copyFile', (req, res) => {
 	// console.log(req.query.param1)
 	// console.log(req.query.param2)
 	fs.copyFile(`../server/fakeDB/${req.query.param1}`,
-	`../server/fakeDB/${req.query.param2}/${req.query.param1}`,  (error, data) => {
-		if (error) {
-			console.log('serverError:', error);
-		}
-		
-		console.log('file renamed')
-	})
-	
+		`../server/fakeDB/${req.query.param2}/${req.query.param1}`, (error, data) => {
+			if (error) {
+				console.log('serverError:', error);
+			}
+
+			console.log('file renamed')
+		})
+
 
 });
 
 
 
 app.get(`/users/:username/:password`, (req, res) => {
-	const {params, body} = req;
+	const { params, body } = req;
 	console.log(params);
 	const user = fakeDB.users.find
-	(user => user.name === params.username && user.password === params.password);
-	if(user){
+		(user => user.name === params.username && user.password === params.password);
+	if (user) {
 		console.log('yayyyy')
 		res.json(user)
 	}
-	else{
+	else {
 		res.json('what')
 	}
 })
@@ -140,29 +152,29 @@ app.post('/drive/moveFile', (req, res, next) => {
 	console.log("lllllllllll")
 	// console.log(req.query.param1)
 	console.log(req.query.param2)
-		fs.rename(`../server/fakeDB/${req.query.param1}`,
-		 `../server/fakeDB/${req.query.param2}/${req.query.param1}`,
-		 (err) => {
+	fs.rename(`../server/fakeDB/${req.query.param1}`,
+		`../server/fakeDB/${req.query.param2}/${req.query.param1}`,
+		(err) => {
 			if (err) {
-				console.log(`err: `,err);
+				console.log(`err: `, err);
 			}
 		}
-		);
-		console.log("moved File successfully.");
-		res.json('success to move')
+	);
+	console.log("moved File successfully.");
+	res.json('success to move')
 })
 
 app.delete('/drive/:deleteFile', (req, res, next) => {
-	const {params} = req;
+	const { params } = req;
 	const deleteFile = params.deleteFile;
 	console.log(deleteFile)
-		fs.rm(`./fakeDB/${deleteFile}`, (err) => {
-			if (err) {
-				console.log(err);
-			}
-			console.log("Delete File successfully.");
-			res.json('success to delete')
-		});
+	fs.rm(`./fakeDB/${deleteFile}`, (err) => {
+		if (err) {
+			console.log(err);
+		}
+		console.log("Delete File successfully.");
+		res.json('success to delete')
+	});
 
 })
 

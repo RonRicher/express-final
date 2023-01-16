@@ -1,150 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
+import File from '../components/file'
+import Folder from '../components/folder';
+
 
 
 
 function Drive() {
 
-  const [info, setInfo] = useState("");
-  const [data, setData] = useState("");
+  // const [info, setInfo] = useState("");
+  // const [data, setData] = useState("");
+  const [driveFiles, setDriveFiles] = useState([]);
+  // console.log(driveFiles)
 
+  useEffect(() => {
+    getfiles()
 
+}, [])
 
-  async function readInfo() {
-    const fileName = 'ggg.txt';
+  async function getfiles() {
     try {
-      const res = await fetch(`http://localhost:8000/drive/info/${fileName}`);
+      const res = await fetch("http://localhost:8000/drive/getFiles")
       const data = await res.json();
-      console.log(data)
-      const object = {
-        'blocks: ': data.blocks,
-        'Created: ': data.birthtime,
-        'Size: ': data.size
-      }
-      
-      setInfo(JSON.stringify(object));
-      // setInfo(data);
+      setDriveFiles(data);
+      console.log(driveFiles)
     }
-    catch (error) {
-      console.log(error);
+    catch (err) {
+      console.log(err);
     }
   }
 
-
-
-  async function showData() {
-    const fileName = 'ggg.txt';
-    try {
-      const res = await fetch(`http://localhost:8000/drive/show/${fileName}`);
-      const data = await res.json();
-      setData(data);
-    }
-    catch (error) {
-      console.log(error);
-    }
-  }
-
-
-  async function moveFile() {
-    const fileName = 'file.txt';
-    const destination = `hello`;
-    try {
-      const res = await fetch(`http://localhost:8000/drive/moveFile/?param1=${fileName}&param2=${destination}`,
-      {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-      });
-    }
-    catch (error) {
-      console.log('clientError: ', error);
-    }
-  }
-
-  async function deleteFile() {
-    const deleteFile = 'ggg.txt';
-    try {
-      const res = await fetch(`http://localhost:8000/drive/${deleteFile}`,
-      {
-        method: 'DELETE',
-        headers: {'Content-Type': 'application/json'},
-      });
-    }
-    catch (error) {
-      console.log(error);
-    }
-  }
-
-  async function rename() {
-    const fileName = 'ggg.txt';
-    const name = prompt('enter file new name')
-    try {
-      const res = await fetch(`http://localhost:8000/drive/rename/?param1=${name}&param2=${fileName}`,
-        {
-          method: 'post',
-          headers: { 'Content-Type': 'application/json' },
-        });
-      // console.log(data)
-      // setInfo(data);
-    }
-    catch (error) {
-      console.log(error);
-    }
-  }
-
-  async function copyFile() {
-    const fileName = 'ggg.txt';
-    const folderName = 'hello'
-    try {
-      const res = await fetch(`http://localhost:8000/drive/copyFile/?param1=
-      ${fileName}&param2=${folderName}`,
-        {
-          method: 'post',
-          headers: { 'Content-Type': 'application/json' },
-        });
-      // console.log(data)
-      // setInfo(data);
-    }
-    catch (error) {
-      console.log(error);
-    }
-  }
-
-  async function rename(){
-    const name = 'file.txt';
-    const newName = prompt('please enter the new name');
-    try {
-      const res = fetch(`http://localhost:8000/drive/rename/?name=${name}&newName=${newName}`,
-      {
-        method: 'PUT',
-        headers: {'Content-Type': 'application/json'}
-      })
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  async function copyFile(){
-    const name = 'file.txt';
-    const folder = prompt('choose folder in directory')
-    try {
-      const res = fetch(`http://localhost:8000/drive/copyFile/?name=${name}&newName=${folder}`,
-      {
-        method: 'PUT',
-        headers: {'Content-Type': 'application/json'}
-      })
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
 
   return (
     <div className="App">
       <h1>welcome to google drive</h1>
-      <div className='fileContainer'>file 1.txt<br />
-      <h6 style={{ backgroundColor: `salmon` }}>{info}</h6>
+      {<div>{driveFiles?.map((file) => file.includes('.') ? <File key={Math.random() * 0.5} name={file}/> : <Folder key={Math.random() * 0.5} name={file}/>)}</div>}
+      {/* <div className='fileContainer'>file 1.txt<br />
+        <h6 style={{ backgroundColor: `salmon` }}>{info}</h6>
       </div>
       <div>
         <br />
+
+
+<File key={Math.random() * 0.5} name={file}/>
+
 
         <h2 style={{ backgroundColor: `green` }}>{data}</h2>
         <button onClick={readInfo}>info</button>
@@ -153,7 +52,9 @@ function Drive() {
         <button onClick={moveFile}>move file</button>
         <button onClick={rename}>rename file</button>
         <button onClick={copyFile}>copy file</button>
-      </div>
+      </div> */}
+
+
     </div>
   );
 }
