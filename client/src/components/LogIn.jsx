@@ -59,7 +59,7 @@ function LogIn() {
             return;
         }
 
-        localStorage.setItem("userId", user.id);
+        localStorage.setItem("userId", 1);
         // setUserNum(user.id);
         window.history.pushState(null, null, window.location.href);
         window.onpopstate = window.history.go(1);

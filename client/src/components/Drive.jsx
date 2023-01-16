@@ -73,43 +73,9 @@ function Drive() {
     }
   }
 
-  async function rename() {
-    const fileName = 'ggg.txt';
-    const name = prompt('enter file new name')
-    try {
-      const res = await fetch(`http://localhost:8000/drive/rename/?param1=${name}&param2=${fileName}`,
-        {
-          method: 'post',
-          headers: { 'Content-Type': 'application/json' },
-        });
-      // console.log(data)
-      // setInfo(data);
-    }
-    catch (error) {
-      console.log(error);
-    }
-  }
-
-  async function copyFile() {
-    const fileName = 'ggg.txt';
-    const folderName = 'hello'
-    try {
-      const res = await fetch(`http://localhost:8000/drive/copyFile/?param1=
-      ${fileName}&param2=${folderName}`,
-        {
-          method: 'post',
-          headers: { 'Content-Type': 'application/json' },
-        });
-      // console.log(data)
-      // setInfo(data);
-    }
-    catch (error) {
-      console.log(error);
-    }
-  }
 
   async function rename(){
-    const name = 'file.txt';
+    const name = 'ggg.txt';
     const newName = prompt('please enter the new name');
     try {
       const res = fetch(`http://localhost:8000/drive/rename/?name=${name}&newName=${newName}`,

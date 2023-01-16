@@ -5,21 +5,31 @@ import '../src/signIn.css';
 import Home from './components/Home';
 import Drive from './components/Drive';
 import { Route, Routes } from 'react-router-dom';
-import './App.css'
+import './App.css';
 import SignUp from './components/SignUp';
 
 
 function App() {
 
+    const userId = localStorage.getItem('userId')
   return (
     <>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/Drive" element={<Drive />} />
-        <Route path="/LogIn" element={<Login />} />
-        <Route path="/SignUp" element={<SignUp />} />
-      </Routes>
+      {userId ?
+        <Routes>
+
+          <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/Drive" element={<Drive />} />
+          <Route path="/LogIn" element={<Login />} />
+          <Route path="/SignUp" element={<SignUp />} />
+        </Routes>
+
+        :
+        <Routes>
+          <Route path="*" element={<Login />} />
+          <Route path="/SignUp" element={<SignUp />} />
+        </Routes>
+      }
     </>
   );
 }
