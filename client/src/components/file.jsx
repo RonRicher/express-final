@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 import Image from './icon.png';
 
 
@@ -6,18 +7,23 @@ import Image from './icon.png';
 function File(props) {
     const [info, setInfo] = useState("");
     const [data, setData] = useState("");
+    const location = useLocation();
+    const url = location.pathname.split('/');
+    url.shift();
+    url.shift();
+    const currentPath = url.join('/');
 
     async function readInfo() {
-        const fileName = 'ggg.txt';
+        const fileName = `${currentPath}/${props.name}`;
         try {
             const res = await fetch(`http://localhost:8000/drive/info/${fileName}`);
             const data = await res.json();
-            console.log(data)
+            console.log(data);
             const object = {
                 'blocks: ': data.blocks,
                 'Created: ': data.birthtime,
                 'Size: ': data.size
-            }
+            };
 
             setInfo(JSON.stringify(object));
         }
@@ -27,10 +33,11 @@ function File(props) {
     }
 
     async function showData() {
-        const fileName = 'ggg.txt';
+        const fileName = `${currentPath}/${props.name}`;
         try {
             const res = await fetch(`http://localhost:8000/drive/show/${fileName}`);
             const data = await res.json();
+
             setData(data);
         }
         catch (error) {
@@ -40,11 +47,10 @@ function File(props) {
 
 
     async function moveFile() {
-        const fileName = 'file.txt';
+        const fileName = props.name;
         const destination = `hello`;
         try {
-            const res = await fetch(`http://localhost:8000/drive/
-            moveFile/?source=${fileName}&destination=${destination}`,
+            const res = await fetch(`http://localhost:8000/drive/moveFile/?source=${fileName}&destination=${destination}`,
                 {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -56,7 +62,7 @@ function File(props) {
     }
 
     async function deleteFile() {
-        const deleteFile = 'ggg.txt';
+        const deleteFile = props.name;
         try {
             const res = await fetch(`http://localhost:8000/drive/${deleteFile}`,
                 {
@@ -70,16 +76,14 @@ function File(props) {
     }
 
     async function rename() {
-        const name = 'ggg.txt';
-        const newName = prompt('enter file new name')
+        const name = props.name;
+        const newName = prompt('Enter new name');
         try {
             const res = await fetch(`http://localhost:8000/drive/rename/?name=${name}&newName=${newName}`,
                 {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                 });
-            // console.log(data)
-            // setInfo(data);
         }
         catch (error) {
             console.log(error);
@@ -87,46 +91,44 @@ function File(props) {
     }
 
     async function copyFile() {
-        const fileName = 'ggg.txt';
-        const folderName = 'hello'
+        const fileName = props.name;
+        const folderName = prompt('Please enter the name of the folder');
         try {
             const res = await fetch(`http://localhost:8000/drive/copyFile/?name=${fileName}&newName=${folderName}`,
                 {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                 });
-            // console.log(data)
-            // setInfo(data);
         }
         catch (error) {
             console.log(error);
         }
     }
 
-    
+
 
 
     return (
         <>
-            
+
             <div className='fileContainer'>{props.name}<br />
                 <h6 style={{ backgroundColor: `salmon` }}>{info ? info : null}</h6>
-                <img src={Image} alt=""  width='180px' height='130px'/>
-            <div>
-                <br />
-                <h2 style={{ backgroundColor: `green` }}>{data ? data : null}</h2>
-                <div className="buttons">
-                <button onClick={readInfo}>info</button>
-                <button onClick={showData}>show data</button>
-                <button onClick={deleteFile}>delete file</button>
-                <button onClick={moveFile}>move file</button>
-                <button onClick={rename}>rename file</button>
-                <button onClick={copyFile}>copy file</button>
+                <img src={Image} alt="" width='180px' height='130px' />
+                <div>
+                    <br />
+                    <h2 style={{ backgroundColor: `green` }}>{data ? data : null}</h2>
+                    <div className="buttons">
+                        <button onClick={readInfo}>info</button>
+                        <button onClick={showData}>show data</button>
+                        <button onClick={deleteFile}>delete file</button>
+                        <button onClick={moveFile}>move file</button>
+                        <button onClick={rename}>rename file</button>
+                        <button onClick={copyFile}>copy file</button>
+                    </div>
                 </div>
             </div>
-            </div>
         </>
-    )
+    );
 }
 
 export default File;

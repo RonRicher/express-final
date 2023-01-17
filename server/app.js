@@ -56,8 +56,8 @@ let fakeDB = [{
 		{
 			folderName: 'hello', files: ['iii.txt', 'bbb.txt', 'ccc.txt',
 				{
-					folderName: 'Joalin', files: ['bbb.txt', 'ccc.txt',
-						{ folderName: 'amit', files: ['bbb.txt', 'asdd.txt'] }],
+					folderName: 'Joalin', files: ['aaa.txt', 'lll.txt',
+						{ folderName: 'amit', files: ['rrr.txt', 'asdd.txt'] }],
 				}]
 		}]
 },
@@ -113,7 +113,6 @@ app.get('/drive/getFiles/:userName/*', (req, res) => {
 			if (user.name === currentUserName) {
 				let a = user.files;
 				for (index in currentFolderName) {
-
 					for (i in a) {
 						if (typeof a[i] === 'object') {
 							if (a[i].folderName === currentFolderName[index]) {
@@ -124,7 +123,6 @@ app.get('/drive/getFiles/:userName/*', (req, res) => {
 				}
 				res.send(a || []);
 			}
-
 		}
 	}
 	catch (error) {
@@ -134,11 +132,10 @@ app.get('/drive/getFiles/:userName/*', (req, res) => {
 
 
 
-app.get('/drive/info/:fileName', (req, res) => {
+app.get('/drive/info/*', (req, res) => {
 	const { params } = req;
 
-	console.log(params);
-	fs.stat(`../server/fakeDB/${params.fileName}`, 'utf8', (error, data) => {
+	fs.stat(`../server/fakeDB/${params[0]}`, 'utf8', (error, data) => {
 		if (error) {
 			console.log('serverError:', error);
 		}
@@ -151,11 +148,12 @@ app.get('/drive/info/:fileName', (req, res) => {
 	});
 });
 
-app.get('/drive/show/:fileName', (req, res) => {
+
+app.get('/drive/show/*', (req, res) => {
 	const { params } = req;
 
 	console.log(params);
-	fs.readFile(`../server/fakeDB/${params.fileName}`, 'utf8', (error, data) => {
+	fs.readFile(`../server/fakeDB/${params[0]}`, 'utf8', (error, data) => {
 		if (error) {
 			console.log('serverError:', error);
 		}
@@ -181,7 +179,7 @@ app.put('/drive/rename', (req, res) => {
 app.put('/drive/copyFile', (req, res) => {
 	console.log(req.query.name);
 	console.log(req.query.newName);
-	fs.copyFile(`../server/fakeDB/${req.query.name}`, `../server/fakeDB/${req.query.newName}/${req.query.name}`, (error, data) => {
+	fs.copyFile(`../server/fakeDB/*/${req.query.name}`, `../server/fakeDB/${req.query.newName}/${req.query.name}`, (error, data) => {
 		if (error) {
 			console.log('serverError:', error);
 		}
